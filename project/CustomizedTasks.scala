@@ -2,7 +2,6 @@ import sbt.inc.Analysis
 
 
 object CustomizedTasks {
-  val lifecycleVersion = "0.9.7"
   import sbt.Keys._
   import sbt._
 
@@ -40,8 +39,8 @@ object CustomizedTasks {
   }
 
   private def mkCommand(classpath: String)(ivy: String)(classses: String): String = {
-    if (isWindows) "java -cp \"" + classses + ";" + classpath + "\" -javaagent:" + ivy + "/cache/net.imadz/Lifecycle/jars/Lifecycle-" + lifecycleVersion + ".jar -Dnet.imadz.bcel.save.original=true net.imadz.lifecycle.StaticWeaver \"" + classses + "\""
-    else "java -cp \"" + classses + ":" + classpath + "\" -javaagent:" + ivy + "/cache/net.imadz/Lifecycle/jars/Lifecycle-" + lifecycleVersion + ".jar -Dnet.imadz.bcel.save.original=true net.imadz.lifecycle.StaticWeaver \"" + classses + "\""
+    if (isWindows) "java -cp \"" + classses + ";" + classpath + "\" -javaagent:" + ivy + "/cache/net.imadz/Lifecycle/jars/Lifecycle-" + "0.9.10" + ".jar -Dnet.imadz.bcel.save.original=true net.imadz.lifecycle.StaticWeaver \"" + classses + "\""
+    else "java -cp \"" + classses + ":" + classpath + "\" -javaagent:" + ivy + "/cache/net.imadz/Lifecycle/jars/Lifecycle-" + "0.9.10" + ".jar -Dnet.imadz.bcel.save.original=true net.imadz.lifecycle.StaticWeaver \"" + classses + "\""
   }
 
   private def generateShellFile(folder: File, weaveCmd: String) = {

@@ -1,17 +1,58 @@
 @layout("Meta-FSM ATM Tutorial") {
-<div class="jumbotron" ng-controller="ATMController">
-    <div class="container">
-        <div class="col-sm-12">
-            <h1 ng-show="showResultFlag">
-                {{cash | currency}}, {{state}}
-            </h1>
-        </div>
+<div ng-controller="ATMController">
+    <!--ATM-->
+    <div class="jumbotron">
+        <div class="container">
+            <div class="col-sm-12">
+                <h1 ng-show="showResultFlag">
+                    {{cash | currency}}, {{state}}
+                </h1>
+            </div>
 
-        <div>
-            <button class="btn btn-primary col-sm-4 " ng-click="deposit()">Deposit $100</button>
-            <button class="btn btn-default col-sm-4 col-sm-offset-4" ng-click="withdraw()">Withdraw $100</button>
-            <button class="btn btn-default col-sm-4 col-sm-offset-4" ng-click="stop()">Stop</button>
+            <div class="row">
+                <div class="col-lg-3">
+                    <button class="btn btn-primary" ng-click="deposit()">Deposit $100</button>
+                </div>
+                <div class="col-lg-3">
+                    <button class="btn btn-default" ng-click="withdraw()">Withdraw $100</button>
+                </div>
+                <div class="col-lg-3">
+                    <button class="btn btn-default" ng-click="recycle()">Recycle</button>
+                </div>
+                <div class="col-lg-3">
+                    <button class="btn btn-default" ng-click="reset()">Reset</button>
+                </div>
+            </div>
         </div>
     </div>
+    <div>
+        <!--State Diagram-->
+        <div class="col-lg-6">
+            <img style="width: 570px" src="/assets/images/atm_{{state}}.jpg" alt="StateMachine">
+        </div>
+        <!--Time line-->
+        <div class="col-lg-6">
+            <table class="table" style="width: auto;">
+                <tr>
+                    <th>Start Time</th>
+                    <th>Event name</th>
+                    <th>From State</th>
+                    <th>To State</th>
+                    <th>Cost Time<small>(mills)</small></th>
+                </tr>
+                <tr ng-repeat="msg in msgs | orderBy: sortByDate : true | limitTo : offset ">
+                    <td>{{msg.start | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                    <td>{{msg.eventName}}</td>
+                    <td>{{msg.fromState}}</td>
+                    <td>{{msg.toState}}</td>
+                    <td>{{msg.cost}}</td>
+                </tr>
+            </table>
+            <div ng-show="hasMore">
+                <button class="btn btn-primary" style="float: right" data-ng-click="showMore()">显示更多</button>
+            </div>
+        </div>
+    </div>
+
 </div>
 }

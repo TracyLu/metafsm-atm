@@ -6,6 +6,8 @@
 GET     /                           controllers.AppController.index
 GET     /deposit                      controllers.AppController.deposit
 GET     /withdraw                       controllers.AppController.withdraw
+GET     /recycle                       controllers.AppController.recycle
+GET     /reset                       controllers.AppController.reset
 GET     /websocket/                 controllers.AppController.indexWS
 
 

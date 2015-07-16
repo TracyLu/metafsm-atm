@@ -10,8 +10,6 @@ object ApplicationBuild extends Build {
   val appName = "metafsm-atm"
   val appVersion = "1.0"
 
-  val lifecycleVersion = "0.9.7"
-  lazy val lifecycle = "net.imadz" % "Lifecycle" % lifecycleVersion
   lazy val orgId = "net.imadz"
 
   lazy val atm = Project(
@@ -21,7 +19,7 @@ object ApplicationBuild extends Build {
       organization := orgId,
       version := "0.1.0",
       scalaVersion := "2.10.4",
-      libraryDependencies += lifecycle,
+      libraryDependencies += "net.imadz" % "Lifecycle" % "0.9.10",
       compile in Compile <<= compile in Compile dependsOn clean,
       compile in Compile <<= CustomizedTasks.weaveTask
     )

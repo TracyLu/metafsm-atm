@@ -1,5 +1,6 @@
 package controllers
 
+import misc.Global
 import net.imadz.ATM
 import play.api.mvc._
 import play.api.mvc.Results._
@@ -13,7 +14,7 @@ import play.api.libs.iteratee.{Enumerator, Iteratee}
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import actors._
-import akka.actor.Props
+import akka.actor.{ActorSystem, Actor, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 import actors.StartSocket
@@ -28,13 +29,16 @@ import play.api.Routes
  */
 object AppController extends Controller with Secured{
 
+  var atm: ATM = null
+  val sys = Global.sys
+
+  val atmActor  = sys.actorSelection("/user/ATMMonitorActor")
+
   def index = withAuth {
     implicit request => userId =>
+      if(atm == null) atm = ATM(request.toInt)
       Ok(views.html.app.index())
   }
-
-  val atmActor = Akka.system.actorOf(Props[ATMMonitorActor])
-  val atm = ATM()
 
   /**
    * This function crate a WebSocket using the
@@ -46,6 +50,7 @@ object AppController extends Controller with Secured{
 
       implicit val timeout = Timeout(3 seconds)
 
+      println("atmActorPath:" + atmActor.anchorPath)
       // using the ask pattern of Akka,
       // get the enumerator for that user
       (atmActor ? StartSocket(userId)) map {
@@ -64,17 +69,26 @@ object AppController extends Controller with Secured{
   def deposit = withAuth {
     userId => implicit request =>
       atm.deposit()
-      atmActor ! Start(userId)
-      atmActor ! Deposit(userId, atm.getTotalCash(), atm.getState())
-      Ok("")
+      Ok
   }
 
 
   def withdraw = withAuth {
     userId => implicit request =>
       atm.withdraw
-      atmActor ! Withdraw(userId, atm.getTotalCash(), atm.getState())
-      Ok("")
+      Ok
+  }
+
+  def recycle = withAuth {
+    userId => implicit request =>
+      atm.recycle()
+      Ok
+  }
+
+  def reset = withAuth {
+    userId => implicit request =>
+      atm = ATM(userId)
+      Ok(views.html.app.index())
   }
 
   def javascriptRoutes = Action {
@@ -83,7 +97,9 @@ object AppController extends Controller with Secured{
         Routes.javascriptRouter("jsRoutes")(
           routes.javascript.AppController.indexWS,
           routes.javascript.AppController.deposit,
-          routes.javascript.AppController.withdraw
+          routes.javascript.AppController.withdraw,
+          routes.javascript.AppController.recycle,
+          routes.javascript.AppController.reset
         )
       ).as("text/javascript")
   }
@@ -113,6 +129,7 @@ trait Secured {
   def withAuth(f: => Int => Request[_ >: AnyContent] => Result): EssentialAction = {
     Security.Authenticated(username, unauthF) {
       username =>
+        println("WithAuth:" + username.toInt)
         Action(request => f(username.toInt)(request))
     }
   }

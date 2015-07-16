@@ -13,25 +13,23 @@ public interface ATMLifecycle {
     @StateSet
     interface States {
         @Initial
-        @Transition(event = Events.Deposit.class, value = NonEmpty.class)
+        @Transitions({@Transition(event = Events.Deposit.class, value = NonEmpty.class),
+                @Transition(event=Events.Recycle.class, value=Recycled.class)})
         class Empty {
         }
 
         @Transitions({@Transition(event = Events.Deposit.class, value = {NonEmpty.class, Full.class}),
-                @Transition(event = Events.Withdraw.class, value = {NonEmpty.class, Empty.class}),
-                @Transition(event = Events.Stop.class, value = Stopped.class)
+                @Transition(event = Events.Withdraw.class, value = {NonEmpty.class, Empty.class})
         })
         class NonEmpty {
         }
 
-        @Transitions({@Transition(event = Events.Withdraw.class, value = NonEmpty.class),
-                @Transition(event = Events.Stop.class, value = Stopped.class)
-        })
+        @Transition(event = Events.Withdraw.class, value = NonEmpty.class)
         class Full {
         }
 
         @Final
-        class Stopped {}
+        class Recycled {}
 
     }
 
@@ -46,7 +44,7 @@ public interface ATMLifecycle {
         class Withdraw {
         }
 
-        class Stop {}
+        class Recycle {}
     }
 
     @ConditionSet
@@ -63,9 +61,9 @@ public interface ATMLifecycle {
         public static class TotalCashJudger implements ConditionalEvent<Conditions.CashCounter> {
             @Override
             public Class<?> doConditionJudge(Conditions.CashCounter t) {
-                if (t.getTotalCash() >= 1000) {
+                if (t.getTotalCash() >= 500) {
                     return States.Full.class;
-                } else if (t.getTotalCash() < 1000 && t.getTotalCash() > 0) {
+                } else if (t.getTotalCash() < 500 && t.getTotalCash() > 0) {
                     return States.NonEmpty.class;
                 } else {
                     return States.Empty.class;

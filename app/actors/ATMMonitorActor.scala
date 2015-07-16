@@ -1,6 +1,7 @@
 package actors
 
 import akka.actor.Actor
+import org.joda.time.DateTime
 import play.api.Logger
 import play.api.libs.iteratee.Concurrent.Channel
 import play.api.libs.iteratee.{Concurrent, Enumerator}
@@ -22,7 +23,7 @@ class ATMMonitorActor extends Actor {
   var webSockets = Map[Int, UserChannel]()
 
   // this map relate every user with his current time
-  var usersTimes = Map[Int, Int]()
+//  var usersTimes = Map[Int, Int]()
 
   override def receive = {
 
@@ -53,27 +54,15 @@ class ATMMonitorActor extends Actor {
       // this will be used for create the WebSocket
       sender ! userChannel.enumerator
 
-    case Start(userId) =>
-      usersTimes += (userId -> 0)
+//    case Start(userId) =>
+//      usersTimes += (userId -> 0)
 
     case Stop(userId) =>
-      removeUserTimer(userId)
+//      removeUserTimer(userId)
       
       val json = Map("data" -> toJson(0))
       webSockets.get(userId).get.channel push Json.toJson(json)
 
-    case Deposit(userId, cash, state) =>
-      val json = Map("data" -> toJson(cash), "state" -> toJson(state))
-          // writing data to tha channel,
-          // will send data to all WebSocket opend form every user
-          webSockets.get(userId).get.channel push Json.toJson(json)
-
-
-    case Withdraw(userId, cash, state) =>
-      val json = Map("data" -> toJson(cash), "state" -> toJson(state))
-      // writing data to tha channel,
-      // will send data to all WebSocket opend form every user
-      webSockets.get(userId).get.channel push Json.toJson(json)
 
     case SocketClosed(userId) =>
 
@@ -87,13 +76,43 @@ class ATMMonitorActor extends Actor {
         log debug s"channel for user : $userId count : ${userChannel.channelsCount}"
       } else {
         removeUserChannel(userId)
-        removeUserTimer(userId)
+//        removeUserTimer(userId)
         log debug s"removed channel and timer for $userId"
       }
 
+
+    case eventInfo @ EventInfo(userId: Int, event: String, totalCash: Int, from: String, to: String, start: DateTime, cost: Long) =>
+      import play.api.libs.json._
+      import play.api.libs.functional.syntax._
+
+      implicit val eventInfoWrites = new Writes[EventInfo] {
+        def writes(event: EventInfo) = Json.obj(
+          "userId" -> event.userId,
+          "eventName" -> event.eventName,
+          "totalCash" -> event.totalCash,
+          "fromState" -> event.fromState,
+          "toState" -> event.toState,
+          "start" -> event.start,
+          "cost" -> event.cost
+        )
+      }
+
+
+      implicit val eventInfoReads: Reads[EventInfo] = (
+        (JsPath \ "userId").read[Int] and
+          (JsPath \ "eventName").read[String] and
+          (JsPath \ "totalCash").read[Int] and
+          (JsPath \ "fromState").read[String] and
+          (JsPath \ "toState").read[String] and
+          (JsPath \ "start").read[DateTime] and
+          (JsPath \ "cost").read[Long]
+        )(EventInfo.apply _)
+
+      val json = Map("eventInfo" -> toJson(eventInfo))
+      webSockets.get(userId).get.channel push Json.toJson(json)
   }
 
-  def removeUserTimer(userId: Int) = usersTimes -= userId
+//  def removeUserTimer(userId: Int) = usersTimes -= userId
   def removeUserChannel(userId: Int) = webSockets -= userId
 
 }
@@ -112,4 +131,6 @@ case class Stop(userId: Int) extends SocketMessage
 case class Deposit(userId: Int, cash: Int, state: String) extends SocketMessage
 
 case class Withdraw(userId: Int, cash: Int, state: String) extends SocketMessage
+
+case class EventInfo(userId: Int, eventName: String, totalCash: Int, fromState: String, toState: String, start: DateTime, cost: Long) extends SocketMessage
 
