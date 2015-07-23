@@ -32,6 +32,8 @@ utils.controller('ATMController', ($scope, $http) ->
     $http.get(jsRoutes.controllers.AppController.recycle().url).success( ->)
 
   $scope.reset = ->
+      $scope.state = "Empty"
+      $scope.cash = 0
       $http.get(jsRoutes.controllers.AppController.reset().url).success( ->)
 
 
