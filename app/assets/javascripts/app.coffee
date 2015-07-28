@@ -8,6 +8,11 @@ utils.controller('ATMController', ($scope, $http) ->
     $scope.pageSize = 3
     $scope.state = "Empty"
     $scope.cash = 0
+    $scope.canDeposit = true
+    $scope.canWithDraw = false
+    $scope.canRecycle = true
+    $scope.canReset = false
+    $scope.hasMore = false
 
   startWS = ->
     wsUrl = jsRoutes.controllers.AppController.indexWS().webSocketURL()
@@ -20,6 +25,10 @@ utils.controller('ATMController', ($scope, $http) ->
         $scope.state = JSON.parse(msg.data).eventInfo.toState
         $scope.msgs.push JSON.parse(msg.data).eventInfo
         $scope.hasMore = $scope.msgs.length > $scope.offset
+        $scope.canDeposit = $scope.state is "Empty" or $scope.state is "NonEmpty"
+        $scope.canWithDraw = $scope.state is "NonEmpty" or $scope.state is "Full"
+        $scope.canRecycle = $scope.state is "Empty"
+        $scope.canReset = $scope.state is "Recycled"
        )
 
   $scope.deposit = ->
@@ -32,8 +41,7 @@ utils.controller('ATMController', ($scope, $http) ->
     $http.get(jsRoutes.controllers.AppController.recycle().url).success( ->)
 
   $scope.reset = ->
-      $scope.state = "Empty"
-      $scope.cash = 0
+      init()
       $http.get(jsRoutes.controllers.AppController.reset().url).success( ->)
 
 
