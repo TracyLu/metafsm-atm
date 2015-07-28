@@ -21,6 +21,7 @@ import actors.StartSocket
 import actors.SocketClosed
 import scala.util.Random
 import play.api.Routes
+import scala.collection.mutable.Map
 
 /**
  * User: Luigi Antonini
@@ -29,14 +30,14 @@ import play.api.Routes
  */
 object AppController extends Controller with Secured{
 
-  var atm: ATM = null
   val sys = Global.sys
+  val atmMap = Map[Int, ATM]().withDefault(ATM)
 
   val atmActor  = sys.actorSelection("/user/ATMMonitorActor")
 
   def index = withAuth {
-    implicit request => userId =>
-      if(atm == null) atm = ATM(request.toInt)
+     userId => implicit request =>
+      atmMap += userId -> atmMap(userId)
       Ok(views.html.app.index())
   }
 
@@ -68,27 +69,34 @@ object AppController extends Controller with Secured{
 
   def deposit = withAuth {
     userId => implicit request =>
-      atm.deposit()
+      atmMap(userId).deposit()
       Ok
   }
 
 
   def withdraw = withAuth {
     userId => implicit request =>
-      atm.withdraw
+      atmMap(userId).withdraw
       Ok
   }
 
   def recycle = withAuth {
     userId => implicit request =>
-      atm.recycle()
+      atmMap(userId).recycle()
       Ok
   }
 
   def reset = withAuth {
     userId => implicit request =>
-      atm = ATM(userId)
+      atmMap update (userId,ATM(userId))
       Ok(views.html.app.index())
+  }
+
+  def getStatus = withAuth {
+    userId => implicit request =>
+      val atm = atmMap(userId)
+      atmActor ! CurrentStatus(userId, atm.getTotalCash(), atm.getState())
+      Ok
   }
 
   def javascriptRoutes = Action {
@@ -99,7 +107,8 @@ object AppController extends Controller with Secured{
           routes.javascript.AppController.deposit,
           routes.javascript.AppController.withdraw,
           routes.javascript.AppController.recycle,
-          routes.javascript.AppController.reset
+          routes.javascript.AppController.reset,
+          routes.javascript.AppController.getStatus
         )
       ).as("text/javascript")
   }

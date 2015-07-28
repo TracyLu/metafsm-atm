@@ -23,7 +23,7 @@ class ATMMonitorActor extends Actor {
   var webSockets = Map[Int, UserChannel]()
 
   // this map relate every user with his current time
-//  var usersTimes = Map[Int, Int]()
+  //  var usersTimes = Map[Int, Int]()
 
   override def receive = {
 
@@ -54,12 +54,12 @@ class ATMMonitorActor extends Actor {
       // this will be used for create the WebSocket
       sender ! userChannel.enumerator
 
-//    case Start(userId) =>
-//      usersTimes += (userId -> 0)
+    //    case Start(userId) =>
+    //      usersTimes += (userId -> 0)
 
     case Stop(userId) =>
-//      removeUserTimer(userId)
-      
+      //      removeUserTimer(userId)
+
       val json = Map("data" -> toJson(0))
       webSockets.get(userId).get.channel push Json.toJson(json)
 
@@ -76,12 +76,12 @@ class ATMMonitorActor extends Actor {
         log debug s"channel for user : $userId count : ${userChannel.channelsCount}"
       } else {
         removeUserChannel(userId)
-//        removeUserTimer(userId)
+        //        removeUserTimer(userId)
         log debug s"removed channel and timer for $userId"
       }
 
 
-    case eventInfo @ EventInfo(userId: Int, event: String, totalCash: Int, from: String, to: String, start: DateTime, cost: Long) =>
+    case eventInfo@EventInfo(userId: Int, event: String, totalCash: Int, from: String, to: String, start: DateTime, cost: Long) =>
       import play.api.libs.json._
       import play.api.libs.functional.syntax._
 
@@ -110,9 +110,30 @@ class ATMMonitorActor extends Actor {
 
       val json = Map("eventInfo" -> toJson(eventInfo))
       webSockets.get(userId).get.channel push Json.toJson(json)
+
+    case currentStatus@CurrentStatus(userId: Int, totalCash: Int, state: String) =>
+      import play.api.libs.json._
+      import play.api.libs.functional.syntax._
+
+      implicit val currentStatusWrites = new Writes[CurrentStatus] {
+        def writes(status: CurrentStatus) = Json.obj(
+          "userId" -> status.userId,
+          "totalCash" -> status.totalCash,
+          "state" -> status.state
+        )
+      }
+
+      implicit val currentStatusReads: Reads[CurrentStatus] = (
+        (JsPath \ "userId").read[Int] and
+          (JsPath \ "totalCash").read[Int] and
+          (JsPath \ "state").read[String]
+        )(CurrentStatus.apply _)
+
+      val json = Map("currentStatus" -> toJson(currentStatus))
+      webSockets.get(userId).get.channel push Json.toJson(json)
   }
 
-//  def removeUserTimer(userId: Int) = usersTimes -= userId
+  //  def removeUserTimer(userId: Int) = usersTimes -= userId
   def removeUserChannel(userId: Int) = webSockets -= userId
 
 }
@@ -133,4 +154,6 @@ case class Deposit(userId: Int, cash: Int, state: String) extends SocketMessage
 case class Withdraw(userId: Int, cash: Int, state: String) extends SocketMessage
 
 case class EventInfo(userId: Int, eventName: String, totalCash: Int, fromState: String, toState: String, start: DateTime, cost: Long) extends SocketMessage
+
+case class CurrentStatus(userId: Int, totalCash: Int, state: String) extends SocketMessage
 

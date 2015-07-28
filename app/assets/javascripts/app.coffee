@@ -21,10 +21,17 @@ utils.controller('ATMController', ($scope, $http) ->
       $scope.$apply( ->
         console.log "received : #{msg}"
         $scope.showResultFlag = true
-        $scope.cash = JSON.parse(msg.data).eventInfo.totalCash
-        $scope.state = JSON.parse(msg.data).eventInfo.toState
-        $scope.msgs.push JSON.parse(msg.data).eventInfo
-        $scope.hasMore = $scope.msgs.length > $scope.offset
+
+
+        if JSON.parse(msg.data).eventInfo?
+            $scope.cash = JSON.parse(msg.data).eventInfo.totalCash
+            $scope.state = JSON.parse(msg.data).eventInfo.toState
+            $scope.msgs.push JSON.parse(msg.data).eventInfo
+            $scope.hasMore = $scope.msgs.length > $scope.offset
+        else
+            $scope.cash = JSON.parse(msg.data).currentStatus.totalCash
+            $scope.state = JSON.parse(msg.data).currentStatus.state
+
         $scope.canDeposit = $scope.state is "Empty" or $scope.state is "NonEmpty"
         $scope.canWithDraw = $scope.state is "NonEmpty" or $scope.state is "Full"
         $scope.canRecycle = $scope.state is "Empty"
@@ -46,14 +53,18 @@ utils.controller('ATMController', ($scope, $http) ->
 
 
   $scope.sortByDate = (msg) ->
-     return new Date(msg.start);
+     new Date(msg.start);
 
   $scope.showMore = ->
      $scope.offset = $scope.offset  + $scope.pageSize
      $scope.hasMore = $scope.msgs.length > $scope.offset
 
+  getStatus = ->
+     $http.get(jsRoutes.controllers.AppController.getStatus().url).success( ->)
+
   init()
   startWS()
+  getStatus()
 )
 
 window.angular.module('app' , ['utils'])

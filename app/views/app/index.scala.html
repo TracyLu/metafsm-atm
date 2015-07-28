@@ -33,13 +33,13 @@
             </div>
         </div>
     </div>
-    <div>
+    <div id="statesDiv">
         <!--State Diagram-->
-        <div class="col-lg-6">
-            <img style="width: 570px" src="/assets/images/atm_{{state}}.jpg" alt="StateMachine">
+        <div id="statesImgDiv" class="col-lg-6">
+            <img id="atmFSM" ng-src="/assets/images/atm_{{state}}.jpg" alt="StateMachine">
         </div>
         <!--Time line-->
-        <div class="col-lg-6">
+        <div id="transitionsHistoryDiv" class="col-lg-6">
             <table class="table" style="width: auto;">
                 <tr>
                     <th>Start Time</th>
@@ -59,7 +59,7 @@
                 </tr>
             </table>
             <div ng-show="hasMore">
-                <button class="btn btn-primary" style="float: right" data-ng-click="showMore()">显示更多</button>
+                <button class="btn btn-primary" style="float: right" data-ng-click="showMore()">More</button>
             </div>
         </div>
     </div>
