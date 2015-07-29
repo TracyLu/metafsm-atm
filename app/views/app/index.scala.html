@@ -3,10 +3,8 @@
     <!--ATM-->
     <div>
         <div class="container">
-            <div class="row">
+            <div id="controlPanel" class="row">
                 <div class="col-lg-8">
-                    <h4>Control Panel</h4>
-
                     <div class="jumbotron">
                         <div class="screenText">
                             <span class="align-center"><b><i>Welcome to iMadz Bank</i></b></span>
@@ -51,10 +49,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                     <div class="row">
                         <!--State Diagram-->
-                        <h4>State Diagram</h4>
+                        <br/>
+                        <br/>
+                        <h5 style="color:white">State Diagram</h5>
 
                         <div id="statesImgDiv" >
                             <img id="atmFSM" ng-src="/assets/images/{{state}}.png" alt="StateMachine">
