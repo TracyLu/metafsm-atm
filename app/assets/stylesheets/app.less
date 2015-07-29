@@ -4,7 +4,17 @@
 }
 
 .eventButton {
-  width: 200px;
+  width: 100px;
+  height: 40px;
+  background-color: #FFFFFF;
+  color: rgb(4, 25, 113);
+  font-weight:bold;
+}
+.btn:disabled {
+  width: 100px;
+  height: 40px;
+  background-color: #666666;
+  color: #FFFFFF;
 }
 
 #statesDiv {
@@ -12,13 +22,33 @@
 }
 
 #statesImgDiv{
-  width: 50%;
+  width: 100%;
 }
 
 #transitionsHistoryDiv{
-  width: 50%;
+  width: 100%;
 }
 
 #atmFSM{
-  width: 100%
+  width: 100%;
+  padding: 0px 0px;
+  margin: 0px 0px;
+}
+
+#atmBackground {
+  background-image: url('/assets/images/atm_banner.png');
+  background-repeat:no-repeat;
+  background-position-x: center;
+  height: 200px;
+  width: 100%;
+}
+
+.jumbotron{
+  background-image: url('/assets/images/ATMScreenBackground.png');
+  width: 100%;
+  height: 337px;
+}
+
+.screenText{
+  color: white;
 }
