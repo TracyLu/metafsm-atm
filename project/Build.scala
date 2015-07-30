@@ -30,9 +30,8 @@ object ApplicationBuild extends Build {
     jdbc,
     "org.specs2" %% "specs2" % "3.3.1" % "test",
     "commons-codec" % "commons-codec" % "1.10",
-    "com.typesafe.akka" %% "akka-testkit" % "2.3.11",
-    orgId %% "atm" % "0.1.0"
-  ) 
+    "com.typesafe.akka" %% "akka-testkit" % "2.3.11"
+  )
   
   val main = Project(appName, file(".")).enablePlugins(play.PlayScala).enablePlugins(SbtWeb).settings(
     version:= appVersion,
@@ -42,6 +41,6 @@ object ApplicationBuild extends Build {
       // for minified *.min.css files
     LessKeys.compress := false,
     libraryDependencies ++= appDependencies
-  )
+  ).dependsOn(atm)
 
 }
