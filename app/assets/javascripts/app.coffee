@@ -15,7 +15,7 @@ utils.controller('ATMController', ($scope, $http) ->
     $scope.hasMore = false
 
   startWS = ->
-    wsUrl = jsRoutes.controllers.AppController.indexWS().webSocketURL()
+    wsUrl = jsRoutes.controllers.AppController.indexWS().webSocketURL(true)
     $scope.socket = new WebSocket(wsUrl)
     $scope.socket.onmessage = (msg) ->
       $scope.$apply( ->
