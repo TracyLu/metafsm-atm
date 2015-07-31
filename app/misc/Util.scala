@@ -3,9 +3,6 @@ package misc
 import java.sql.{Timestamp, Time, Date}
 import java.util.Calendar
 
-import net.imadz.ATM
-import net.imadz.lifecycle.AbsStateMachineRegistry.LifecycleRegistry
-
 /**
  * Created with IntelliJ IDEA.
  * User: luigi

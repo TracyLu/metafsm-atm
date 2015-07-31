@@ -19,9 +19,7 @@ object ApplicationBuild extends Build {
       organization := orgId,
       version := "0.1.0",
       scalaVersion := "2.10.4",
-      libraryDependencies += "net.imadz" % "Lifecycle" % "0.9.10",
-      compile in Compile <<= compile in Compile dependsOn clean,
-      compile in Compile <<= CustomizedTasks.weaveTask
+      compile in Compile <<= compile in Compile dependsOn clean
     )
   )
 
@@ -42,6 +40,6 @@ object ApplicationBuild extends Build {
       // for minified *.min.css files
     LessKeys.compress := false,
     libraryDependencies ++= appDependencies
-  )
+  ).dependsOn(atm)
 
 }

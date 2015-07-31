@@ -2,6 +2,7 @@ package controllers
 
 import misc.Global
 import net.imadz.ATM
+import org.joda.time.DateTime
 import play.api.mvc._
 import play.api.mvc.Results._
 import play.api.libs.json._
@@ -28,15 +29,15 @@ import scala.collection.mutable.Map
  * Date: 17/06/13
  * Time: 23:25
  */
-object AppController extends Controller with Secured{
+object AppController extends Controller with Secured {
 
   val sys = Global.sys
-  val atmMap = Map[Int, ATM]().withDefault(ATM)
+  val atmMap = Map[Int, ATM]().withDefault(new ATM(_))
 
-  val atmActor  = sys.actorSelection("/user/ATMMonitorActor")
+  val atmActor = sys.actorSelection("/user/ATMMonitorActor")
 
   def index = withAuth {
-     userId => implicit request =>
+    userId => implicit request =>
       atmMap += userId -> atmMap(userId)
       Ok(views.html.app.index())
   }
@@ -69,26 +70,41 @@ object AppController extends Controller with Secured{
 
   def deposit = withAuth {
     userId => implicit request =>
+      val start = System.currentTimeMillis()
+      val fromState = atmMap(userId).getState
       atmMap(userId).deposit()
+      val toState = atmMap(userId).getState
+      val cost = System.currentTimeMillis() - start
+      atmActor ! EventInfo(userId, "Deposit", atmMap(userId).getTotalCash(), fromState, toState, new DateTime(start), cost)
       Ok
   }
 
 
   def withdraw = withAuth {
     userId => implicit request =>
+      val start = System.currentTimeMillis()
+      val fromState = atmMap(userId).getState
       atmMap(userId).withdraw
+      val toState = atmMap(userId).getState
+      val cost = System.currentTimeMillis() - start
+      atmActor ! EventInfo(userId, "Withdraw", atmMap(userId).getTotalCash(), fromState, toState, new DateTime(start), cost)
       Ok
   }
 
   def recycle = withAuth {
     userId => implicit request =>
+      val start = System.currentTimeMillis()
+      val fromState = atmMap(userId).getState
       atmMap(userId).recycle()
+      val toState = atmMap(userId).getState
+      val cost = System.currentTimeMillis() - start
+      atmActor ! EventInfo(userId, "Recycle", atmMap(userId).getTotalCash(), fromState, toState, new DateTime(start), cost)
       Ok
   }
 
   def reset = withAuth {
     userId => implicit request =>
-      atmMap update (userId,ATM(userId))
+      atmMap update(userId, new ATM(userId))
       Ok(views.html.app.index())
   }
 
