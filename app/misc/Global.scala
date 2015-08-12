@@ -15,11 +15,8 @@ import scala.concurrent.Future
 
 
 /**
- * Created with IntelliJ IDEA.
- * User: luigi
- * Date: 18/04/13
- * Time: 00:19
- * To change this template use File | Settings | File Templates.
+ * Created By: Tracy Lu
+ * Date: 12/08/15
  */
 object Global extends GlobalSettings {
 

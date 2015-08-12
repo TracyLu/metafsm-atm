@@ -9,9 +9,8 @@ import play.api.libs.json.Json._
 import play.api.libs.json._
 
 /**
- * User: Luigi Antonini
- * Date: 19/07/13
- * Time: 15.38
+ * Created By: Tracy Lu
+ * Date: 12/08/15
  */
 class ATMMonitorActor extends Actor {
 
@@ -96,7 +95,6 @@ class ATMMonitorActor extends Actor {
           "cost" -> event.cost
         )
       }
-
 
       implicit val eventInfoReads: Reads[EventInfo] = (
         (JsPath \ "userId").read[Int] and

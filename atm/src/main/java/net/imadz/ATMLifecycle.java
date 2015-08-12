@@ -7,6 +7,10 @@ import net.imadz.lifecycle.annotations.action.ConditionalEvent;
 import net.imadz.lifecycle.annotations.state.Final;
 import net.imadz.lifecycle.annotations.state.Initial;
 
+/**
+ * Created By: Tracy Lu
+ * Date: 12/08/15
+ */
 @StateMachine
 public interface ATMLifecycle {
 
@@ -14,7 +18,7 @@ public interface ATMLifecycle {
     interface States {
         @Initial
         @Transitions({@Transition(event = Events.Deposit.class, value = NonEmpty.class),
-                @Transition(event=Events.Recycle.class, value=Recycled.class)})
+                @Transition(event = Events.Recycle.class, value = Recycled.class)})
         class Empty {
         }
 
@@ -29,7 +33,8 @@ public interface ATMLifecycle {
         }
 
         @Final
-        class Recycled {}
+        class Recycled {
+        }
 
     }
 
@@ -44,11 +49,12 @@ public interface ATMLifecycle {
         class Withdraw {
         }
 
-        class Recycle {}
+        class Recycle {
+        }
     }
 
     @ConditionSet
-     interface Conditions {
+    interface Conditions {
 
         interface CashCounter {
 

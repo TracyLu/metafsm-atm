@@ -24,9 +24,8 @@ import play.api.Routes
 import scala.collection.mutable.Map
 
 /**
- * User: Luigi Antonini
- * Date: 17/06/13
- * Time: 23:25
+ * Created By: Tracy Lu
+ * Date: 12/08/15
  */
 object AppController extends Controller with Secured{
 

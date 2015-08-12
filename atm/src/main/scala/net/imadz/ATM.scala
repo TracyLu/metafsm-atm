@@ -5,10 +5,12 @@ import net.imadz.lifecycle.annotations.action.Condition
 import net.imadz.lifecycle.annotations.{Event, StateIndicator, LifecycleMeta}
 
 /**
- * Created by Scala on 15-7-8.
+ * Created By: Tracy Lu
+ * Date: 12/08/15
  */
+
 @LifecycleMeta(classOf[ATMLifecycle])
-case class ATM(operatorId: Int) extends ATMLifecycle.Conditions.CashCounter{
+case class ATM(operatorId: Int) extends ATMLifecycle.Conditions.CashCounter {
   private var totalCash: Int = 0
 
   @StateIndicator
