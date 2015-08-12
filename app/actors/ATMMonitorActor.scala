@@ -145,13 +145,7 @@ case class StartSocket(userId: Int) extends SocketMessage
 
 case class SocketClosed(userId: Int) extends SocketMessage
 
-case class Start(userId: Int) extends SocketMessage
-
 case class Stop(userId: Int) extends SocketMessage
-
-case class Deposit(userId: Int, cash: Int, state: String) extends SocketMessage
-
-case class Withdraw(userId: Int, cash: Int, state: String) extends SocketMessage
 
 case class EventInfo(userId: Int, eventName: String, totalCash: Int, fromState: String, toState: String, start: DateTime, cost: Long) extends SocketMessage
 
